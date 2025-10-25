@@ -1,0 +1,6 @@
+Added call_gemma_endpoint.ps1:1, a one-liner-friendly helper that posts a chat completion request to http://127.0.0.1:54546/v1/chat/completions with the gemma-3-270m-it alias. Run it after the server is up with powershell -ExecutionPolicy Bypass -File call_gemma_endpoint.ps1 -UserPrompt "Your question here"; it prints the assistant’s reply or surfaces any HTTP error payload for quick debugging.
+
+Pulled the upstream llama.cpp repo into the workspace and confirmed there are no .exe artifacts anywhere under it. Added launch_gemma_api.py:1, a standalone launcher that wires up the llama.cpp FastAPI server with the Gemma 3 270M instruct model at Model/gemma-3-270m-it-Q8_0.gguf, binds it to 127.0.0.1:54546, locks execution to CPU (n_gpu_layers=0, CUDA disabled), stretches the context window to 32 768 tokens, and tunes threading/cache defaults for better RAM-only throughput.
+
+To run it, install the server extras once (pip install "llama-cpp-python[server]") and then start the service with python launch_gemma_api.py. That exposes an OpenAI-compatible /v1 endpoint you can point your apps at. Adjust n_threads inside the script if you want to reserve more/less CPU for other workloads.
+
